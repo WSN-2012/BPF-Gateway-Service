@@ -11,6 +11,8 @@ import se.kth.ssvl.tslab.wsn.general.bpf.BPFService;
 import se.kth.ssvl.tslab.wsn.general.bpf.exceptions.BPFException;
 import se.kth.ssvl.tslab.wsn.general.dtnapi.exceptions.DTNOpenException;
 import se.kth.ssvl.tslab.wsn.general.dtnapi.types.DTNEndpointID;
+import DirWatcher.FileWatcherException;
+import DirWatcher.PeriodicDirWatcher;
 import bpf.ActionReceiver;
 import bpf.Communication;
 import bpf.DB;
@@ -24,23 +26,29 @@ public class Service implements BPFService {
 	private ActionReceiver action;
 	private Communication comm;
 	private DB db;
+	private static String destination;
+	private String path;
 	
 	public static void main(String args[]) {
 		new Service(args);
 	}
 	
 	public Service(String args[]) {
-		if (args.length == 2) {
+		if (args.length == 3) {
 			init(args);
 			logger.info(TAG, "No argmunets means listening mode");
-		} else if (args.length == 3) {
+		} else if (args.length == 4) {
 			init(args);
+			destination = args[2];
+			path = args[3];
 			try {
-				BPF.getInstance().send(new DTNEndpointID(args[2]), 10000000, "TEEEST".getBytes());
-			} catch (DTNOpenException e) {
-				logger.error(TAG, "There was an error when trying to send the bundle");
-				e.printStackTrace();
+				// monitor the the directory containing file with sensor data
+				PeriodicDirWatcher pdw = new PeriodicDirWatcher(path, 1000);
+
+			} catch (FileWatcherException fwe) {
+				fwe.printStackTrace();
 			}
+			 
 			logger.info(TAG, "Arguments passed trying to send");
 		} else {
 			usage();
@@ -91,6 +99,14 @@ public class Service implements BPFService {
 
 	public BPFActionReceiver getBPFActionReceiver() {
 		return action;
+	}
+	
+	public static void send(byte[] buf){
+		try {
+			BPF.getInstance().send(new DTNEndpointID(destination), 10000000, buf);
+		} catch (DTNOpenException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }
