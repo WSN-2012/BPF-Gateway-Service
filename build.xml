@@ -15,6 +15,7 @@
 	<property name="dir.lib" value="lib" />
     <property name="dir.config" value="config" />
     <property name="dir.dtn" value="${dir.build}/dtn" />
+    <property name="dir.wsndata" value="${dir.build}/wsndata" />
 
 	<!-- Proprties FILES -->
 	<property name="file.jar" value="${dir.jar}/${app.name}.jar" />
@@ -53,6 +54,7 @@
 		<mkdir dir="${dir.classes}" />
 		<mkdir dir="${dir.jar}" />
         <mkdir dir="${dir.dtn}" />
+        <mkdir dir="${dir.wsndata}" />
 	</target>
 
     <target name="compile" depends="prepare">
