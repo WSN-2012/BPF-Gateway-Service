@@ -31,7 +31,8 @@ public class PeriodicDirWatcher extends DirWatcher {
   			  buf = new byte[(int)(raf.length())];
   			  raf.read(buf);
   		  }
-  		  Service.send( buf);
+  		if(buf.length>0)
+			  Service.send( buf);
   		  //System.out.println(new String(buf));
   	  }
   	  catch(Exception e)

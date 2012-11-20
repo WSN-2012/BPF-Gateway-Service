@@ -39,8 +39,8 @@ public class Service implements BPFService {
 			logger.info(TAG, "No argmunets means listening mode");
 		} else if (args.length == 4) {
 			init(args);
-			destination = args[2];
-			path = args[3];
+			destination = args[3];
+			path = args[2];
 			try {
 				// monitor the the directory containing file with sensor data
 				PeriodicDirWatcher pdw = new PeriodicDirWatcher(path, 1000);
