@@ -30,7 +30,9 @@ public class Service implements BPFService {
 	private static String destination;
 	private String path;
 	private static byte[] sendBuf = new byte[0];
-	private static final int SEND_TRESHOLD = 500;
+	private static final int SEND_TRESHOLD = 500; //TODO: make configurable
+	private static final int LIFETIME = 1209600; // (in seconds) TODO: make configurable
+													//1209600 seconds = 2 weeks
 	
 	public static void main(String args[]) {
 		new Service(args);
@@ -114,7 +116,7 @@ public class Service implements BPFService {
 		
 		if (sendBuf.length > SEND_TRESHOLD) {
 			try {
-				BPF.getInstance().send(new DTNEndpointID(destination), 10000000, sendBuf);
+				BPF.getInstance().send(new DTNEndpointID(destination), LIFETIME, sendBuf);
 			} catch (DTNOpenException e) {
 				e.printStackTrace();
 			}
