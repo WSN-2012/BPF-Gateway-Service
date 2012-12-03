@@ -29,6 +29,8 @@ public class Service implements BPFService {
 	private DB db;
 	private static String destination;
 	private String path;
+	private static byte[] sendBuf = new byte[0];
+	private static final int SEND_TRESHOLD = 500;
 	
 	public static void main(String args[]) {
 		new Service(args);
@@ -105,14 +107,34 @@ public class Service implements BPFService {
 	}
 	
 	public static void send(byte[] buf){
-		try {
-			BPF.getInstance().send(new DTNEndpointID(destination), 10000000, buf);
-		} catch (DTNOpenException e) {
-			e.printStackTrace();
+		
+		sendBuf = append(buf);
+		BPF.getInstance().getBPFLogger().debug(TAG, 
+				"New data to be sent. Appending to buffer... Buffer size is now " + sendBuf.length);
+		
+		if (sendBuf.length > SEND_TRESHOLD) {
+			try {
+				BPF.getInstance().send(new DTNEndpointID(destination), 10000000, sendBuf);
+			} catch (DTNOpenException e) {
+				e.printStackTrace();
+			}
+			sendBuf = new byte[0];
 		}
 	}
 	
-
+	public static byte[] append(byte[] buf) {
+		byte[] send = new byte[sendBuf.length + buf.length];
+		// copy sendBuf
+		for (int i = 0; i < sendBuf.length; i++) {
+			send[i] = sendBuf[i];
+		}
+		// copy buf
+		for (int i = 0; i < buf.length; i++) {
+			send[i + sendBuf.length] = buf[i];
+		}
+		return send;
+	}
+	
 	public void updateStats(Stats arg0) {
 		
 	}
