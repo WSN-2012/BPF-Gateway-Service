@@ -8,6 +8,7 @@ import se.kth.ssvl.tslab.wsn.general.bpf.BPF;
 import se.kth.ssvl.tslab.wsn.general.bpf.BPFActionReceiver;
 import se.kth.ssvl.tslab.wsn.general.servlib.bundling.bundles.Bundle;
 import se.kth.ssvl.tslab.wsn.general.servlib.bundling.exception.BundleLockNotHeldByCurrentThread;
+import se.kth.ssvl.tslab.wsn.general.servlib.storage.Stats;
 
 public class ActionReceiver implements BPFActionReceiver {
 
@@ -60,4 +61,12 @@ public class ActionReceiver implements BPFActionReceiver {
 		logger.info(TAG, header + ":" + description);
 	}
 
+	//TODO: this method needs to notify the app
+	public void updateStats (Stats stats) {
+		logger.debug(TAG, "New Stats object received:" +
+				"\nTotal size: " + stats.totalSize() + 
+				"\nStored bundles: " + stats.storedBundles() +
+				"\nTransmitted bundles: " + stats.transmittedBundles() +
+				"\nReceived bundles: " + stats.receivedBundles() );
+	}
 }

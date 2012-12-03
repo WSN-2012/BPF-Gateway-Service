@@ -11,6 +11,7 @@ import se.kth.ssvl.tslab.wsn.general.bpf.BPFService;
 import se.kth.ssvl.tslab.wsn.general.bpf.exceptions.BPFException;
 import se.kth.ssvl.tslab.wsn.general.dtnapi.exceptions.DTNOpenException;
 import se.kth.ssvl.tslab.wsn.general.dtnapi.types.DTNEndpointID;
+import se.kth.ssvl.tslab.wsn.general.servlib.storage.Stats;
 import DirWatcher.FileWatcherException;
 import DirWatcher.PeriodicDirWatcher;
 import bpf.ActionReceiver;
@@ -72,10 +73,12 @@ public class Service implements BPFService {
 		// Try to init the BPF
 		try {
 			BPF.init(this, args[0]);
+			BPF.getInstance().start();
 		} catch (BPFException e) {
 			logger.error(TAG, "Couldn't initialize the BPF, exception: " + e.getMessage());
 			System.exit(-1);
 		}
+		
 	}
 	
 	private void usage() {
@@ -109,4 +112,8 @@ public class Service implements BPFService {
 		}
 	}
 	
+
+	public void updateStats(Stats arg0) {
+		
+	}
 }
