@@ -1,5 +1,6 @@
 package bpf;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
@@ -15,7 +16,6 @@ public class Communication implements BPFCommunication {
 	private static final String TAG = "Communication";
 	
 	public InetAddress getBroadcastAddress() {
-		InetAddress foundBcastAddress = null;
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		try {
 			Enumeration<NetworkInterface> niEnum = NetworkInterface
@@ -25,7 +25,15 @@ public class Communication implements BPFCommunication {
 				if (!ni.isLoopback()) {
 					for (InterfaceAddress interfaceAddress : ni
 							.getInterfaceAddresses()) {
-						foundBcastAddress = interfaceAddress.getBroadcast();
+						if (interfaceAddress.getBroadcast() != null) {
+							BPF.getInstance().getBPFLogger().debug(TAG,
+											"getBroadcastAddress returning: "
+											+ interfaceAddress.getBroadcast());
+							return interfaceAddress.getBroadcast();
+						} else {
+							BPF.getInstance().getBPFLogger().warning(TAG,
+											"Called getBroadcastAddress but foundBcastAddress is null!");
+						}
 					}
 				}
 			}
@@ -34,20 +42,30 @@ public class Communication implements BPFCommunication {
 					.error(TAG, "Exception while getting broadcast address.");
 		}
 
-		if (foundBcastAddress != null) {
-			BPF.getInstance().getBPFLogger().debug(TAG, "Called getBroadcastAddress. Returning: " + foundBcastAddress.getHostAddress());
-		} else {
-			BPF.getInstance().getBPFLogger().warning(TAG, "Called getBroadcastAddress but foundBcastAddress is null!");
-		}
-		
-		return foundBcastAddress;
+		return null;
 	}
 
 	public InetAddress getDeviceIP() {
 		try {
-			return InetAddress.getLocalHost();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			Enumeration<NetworkInterface> ifaces = NetworkInterface
+					.getNetworkInterfaces();
+			while (ifaces.hasMoreElements()) {
+				NetworkInterface iface = ifaces.nextElement();
+				Enumeration<InetAddress> addresses = iface.getInetAddresses();
+
+				while (addresses.hasMoreElements()) {
+					InetAddress addr = addresses.nextElement();
+					if (addr instanceof Inet4Address
+							&& !addr.isLoopbackAddress()) {
+						BPF.getInstance().getBPFLogger().debug(TAG,
+								"getDeviceIP returning " + addr);
+						return addr;
+					}
+				}
+			}
+		} catch (SocketException e) {
+			BPF.getInstance().getBPFLogger()
+					.error(TAG, "Exception while getting device address.");
 		}
 		return null;
 	}
