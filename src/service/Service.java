@@ -20,10 +20,10 @@ import bpf.DB;
 import bpf.Logger;
 
 public class Service implements BPFService {
-	
+
 	private static String TAG = "Service";
-	
-	private Logger logger; 
+
+	private Logger logger;
 	private ActionReceiver action;
 	private Communication comm;
 	private DB db;
@@ -33,18 +33,18 @@ public class Service implements BPFService {
 	private static final int SEND_TRESHOLD = 500; //TODO: make configurable
 	private static final int LIFETIME = 1209600; // (in seconds) TODO: make configurable
 													//1209600 seconds = 2 weeks
-	
+
 	public static void main(String args[]) {
 		new Service(args);
 	}
-	
+
 	public Service(String args[]) {
-		if (args.length == 3) {
+		if (args.length == 4) {
 			init(args);
 			logger.info(TAG, "No argmunets means listening mode");
-		} else if (args.length == 4) {
+		} else if (args.length == 5) {
 			init(args);
-			destination = args[3];
+			destination = args[4];
 			path = args[2];
 			try {
 				// monitor the the directory containing file with sensor data
@@ -59,18 +59,29 @@ public class Service implements BPFService {
 			usage();
 			System.exit(-1);
 		}
+
+		// start thread to wait for kill signal so that we can stop the BPF
+		// before dying
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				logger.debug(TAG, "Shutdown signal received, going to stop BPF...");
+				BPF.getInstance().stop();
+				logger.info(TAG, "Stopping service now");
+			}
+		});
 	}
-	
+
 	private void init(String args[]) {
 		// Init a logger first of all
-		logger = new Logger(Integer.parseInt(args[1]));
-		
+		logger = new Logger(Integer.parseInt(args[1]), args[3]);
+
 		// Init the action receiver
 		action = new ActionReceiver(logger);
-		
+
 		// Init the communications object
 		comm = new Communication();
-		
+
 		// Init the DB object
 		db = new DB(new File("build/database.db"), logger);
 
@@ -79,19 +90,20 @@ public class Service implements BPFService {
 			BPF.init(this, args[0]);
 			BPF.getInstance().start();
 		} catch (BPFException e) {
-			logger.error(TAG, "Couldn't initialize the BPF, exception: " + e.getMessage());
+			logger.error(TAG,
+					"Couldn't initialize the BPF, exception: " + e.getMessage());
 			System.exit(-1);
 		}
-		
+
 	}
-	
+
 	private void usage() {
-		//System.out.println("config-file-path <dest eid> <source eid> <payload type> <payload> \n payload type: <f|m> \n payload: <filename|double quoted message>");
-		System.out.println("config-file-path <dest eid>");
+		// System.out.println("config-file-path <dest eid> <source eid> <payload type> <payload> \n payload type: <f|m> \n payload: <filename|double quoted message>");
+		System.out.println("config-file-path log-file <dest eid>");
 	}
 
 	/* ***************************** */
-	
+
 	public BPFCommunication getBPFCommunication() {
 		return comm;
 	}
@@ -138,6 +150,6 @@ public class Service implements BPFService {
 	}
 	
 	public void updateStats(Stats arg0) {
-		
+
 	}
 }

@@ -1,18 +1,38 @@
 package bpf;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import jlibs.core.lang.Ansi;
 import se.kth.ssvl.tslab.wsn.general.bpf.BPFLogger;
 
 public class Logger implements BPFLogger {
 
 	private int logLevel;
+	private String logFile;
 	
-	public Logger(int logLevel) {
+	public Logger(int logLevel, String logFile) {
 		this.logLevel = logLevel;
+		this.logFile = logFile;
 	}
 
 	private String log(String text, Ansi ansi) {
 		ansi.out(text + "\n");
+		
+		if (logFile != null) {
+			try
+			{
+				FileWriter fw = new FileWriter(logFile,true);
+				fw.write(text + "\n");
+				fw.close();
+			}
+			catch(IOException ioe)
+			{
+				ansi.out("IOException writing in log file" + "\n");
+			}
+		}
+		
 		return text;
 	}
 
