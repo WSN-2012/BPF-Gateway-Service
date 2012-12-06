@@ -1,0 +1,3 @@
+check process wsnservice with pidfile /var/run/wsnservice.pid
+   start program  "/etc/init.d/wsnservice start"
+   stop program  "/etc/init.d/wsnservice stop"

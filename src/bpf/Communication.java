@@ -5,7 +5,6 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Enumeration;
 
 import se.kth.ssvl.tslab.wsn.general.bpf.BPF;
@@ -14,8 +13,8 @@ import se.kth.ssvl.tslab.wsn.general.bpf.BPFCommunication;
 public class Communication implements BPFCommunication {
 
 	private static final String TAG = "Communication";
-	
-	public InetAddress getBroadcastAddress() {
+
+	public InetAddress getBroadcastAddress(String interfaceName) {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		try {
 			Enumeration<NetworkInterface> niEnum = NetworkInterface
@@ -25,14 +24,17 @@ public class Communication implements BPFCommunication {
 				if (!ni.isLoopback()) {
 					for (InterfaceAddress interfaceAddress : ni
 							.getInterfaceAddresses()) {
-						if (interfaceAddress.getBroadcast() != null) {
-							BPF.getInstance().getBPFLogger().debug(TAG,
-											"getBroadcastAddress returning: "
-											+ interfaceAddress.getBroadcast());
+						if (interfaceAddress.getBroadcast() != null
+								&& ni.getName().equals(interfaceName)) {
+							BPF.getInstance()
+									.getBPFLogger()
+									.debug(TAG,
+											"getBroadcastAddress from interface "
+													+ interfaceName
+													+ " is: "
+													+ interfaceAddress
+															.getBroadcast());
 							return interfaceAddress.getBroadcast();
-						} else {
-							BPF.getInstance().getBPFLogger().warning(TAG,
-											"Called getBroadcastAddress but foundBcastAddress is null!");
 						}
 					}
 				}
@@ -42,10 +44,15 @@ public class Communication implements BPFCommunication {
 					.error(TAG, "Exception while getting broadcast address.");
 		}
 
+		BPF.getInstance()
+				.getBPFLogger()
+				.error(TAG,
+						"Called getBroadcastAddress but couldn't find the interface: "
+								+ interfaceName);
 		return null;
 	}
 
-	public InetAddress getDeviceIP() {
+	public InetAddress getDeviceIP(String interfaceName) {
 		try {
 			Enumeration<NetworkInterface> ifaces = NetworkInterface
 					.getNetworkInterfaces();
@@ -56,9 +63,10 @@ public class Communication implements BPFCommunication {
 				while (addresses.hasMoreElements()) {
 					InetAddress addr = addresses.nextElement();
 					if (addr instanceof Inet4Address
-							&& !addr.isLoopbackAddress()) {
-						BPF.getInstance().getBPFLogger().debug(TAG,
-								"getDeviceIP returning " + addr);
+							&& !addr.isLoopbackAddress()
+							&& iface.getName().equals(interfaceName)) {
+						BPF.getInstance().getBPFLogger()
+								.debug(TAG, "getDeviceIP returning " + addr);
 						return addr;
 					}
 				}
@@ -67,7 +75,14 @@ public class Communication implements BPFCommunication {
 			BPF.getInstance().getBPFLogger()
 					.error(TAG, "Exception while getting device address.");
 		}
+
+		BPF.getInstance()
+				.getBPFLogger()
+				.error(TAG,
+						"Called getDeviceIp but couldn't find the interface: "
+								+ interfaceName);
+
 		return null;
 	}
-	
+
 }
