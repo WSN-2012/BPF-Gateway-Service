@@ -74,12 +74,13 @@ public class DB implements BPFDB {
 		int c = 0;
 		for (Map.Entry<String, Object> item : map.entrySet()) {
 			c++;
-
+			result.append("'");
 			// Check if we need to add a comma or not
 			if (c < map.keySet().size()) {
-				result.append(item.getValue() + ", ");
+				result.append(item.getValue() + "', ");
 			} else {
 				result.append(item.getValue());
+				result.append("'");
 			}
 		}
 
