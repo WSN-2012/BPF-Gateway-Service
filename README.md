@@ -22,4 +22,17 @@ Follow the below steps to build service and BPF.
 3.  `git submodule init`
 4.  `git submodule update`
 5.  change config file config/dtn.config.xml
-3.  `ant`
+6.  `ant`
+
+### Start/Stop script
+To install a start/stop script, follow the below steps:
+
+1.  Copy the start/stop script: `cp linux-scripts/bpf-service /etc/init.d/bpf-service`
+2.  Start it: `/etc/init.d/bpf-service start`
+3.  Stop it: `/etc/init.d/bpf-service stop`
+
+### Monitoring (automatic restarting)
+To be able to monitor the service and automatically restarting it, we suggest using monit. Follow the below steps to set it up:
+
+1.  Install monit on your system. E.g: `sudo apt-get install monit`
+2.  Copy the monitor script to the monit path in your system: E.g: `cp linux-scripts/bpf-service.monit /etc/monit/conf.d/bpf-service`
