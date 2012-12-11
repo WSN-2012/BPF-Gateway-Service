@@ -4,43 +4,53 @@
     <!--  Its XML Schema is dtn.config.xsd in the same folder -->
 <tns:DTNConfiguration xmlns:tns="http://www.bytewalla.tslab.ssvl.kth.se/DTNConf"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.bytewalla.tslab.ssvl.kth.se/DTNConf dtn.config.xsd">
+    xsi:schemaLocation="http://www.wsnteam2012.tslab.ssvl.kth.se/DTNConf dtn.config.xsd">
 
     <!--  Storage Section -->
     <!--  Setup your storage here -->
-    <!--
-        quota is the space you will allow DTN to store bundles in the storage
-        type you set, the unit is Megabytes
-	keep_copy indicates whether to keep a copy of the bundle after it has been sent
-    -->
+    <!-- quota: the space limit in Megabytes for bundle storage -->
+    <!-- storage_path: path where to store all files needed (database, bundles...) -->
+    <!-- keep_copy: indicates whether to keep a copy of the bundle after it has been sent -->
     <tns:StorageSetting quota="1" storage_path="build/dtn" test_data_log="true" keep_copy="true"/>
 
 
     <!--  Interfaces Section -->
     <tns:InterfacesSetting>
         <!--  Setup your listening interfaces here -->
-        <tns:Interface id="wlan0" conv_layer_type="tcp"
-            local_port="4556" />
+        <!-- id: name of the interface on which listen -->
+        <!-- conv_layer_type: type of convergence layer [tcp, udp] -->
+        <!-- local_port: listening port -->
+        <tns:Interface id="wlan0" conv_layer_type="tcp" local_port="4556" />
     </tns:InterfacesSetting>
-
 
     <!--  Links Section -->
     <tns:LinksSetting proactive_fragmentation="true" fragmentation_mtu="5000">
         <!--  Setup your links here -->
-        <!-- interval sets the interval in seconds between attempts to connect using ALWAYSON links -->
+        <!-- id: id of the link, used by routes settings to refer to a specific link -->
+        <!-- conv_layer_type: type of convergence layer [tcp, udp] -->
+        <!-- dest: <address:port> of the peer at the other side of this link. <address> can be
+        an IP address or a domain name -->
+        <!-- type: the link type. [ALWAYSON, ONDEMAND, SCHEDULED, OPPORTUNISTIC] -->
+        <!-- interval: sets the interval in seconds between attempts to connect using ALWAYSON links -->
         <tns:Link id="server_link" conv_layer_type="tcp" dest="10.0.0.8:4556" type="ALWAYSON" interval="5" />
     </tns:LinksSetting>
 
-
     <!--  Routes Section -->
+    <!-- local_eid: local Endpoint ID for this node. Must be in the format: dtn://myeid.dtn -->
+    <!-- router_type: type of routing to be used by this node. [static, epidemic, prophet] -->
     <tns:RoutesSetting local_eid="dtn://gateway.dtn" router_type="epidemic" queuing="fifo">
         <!--  Setup your routes here -->
+        <!-- dest: pattern of destination EID that matches this route. Every bundle
+        with destination matching this pattern will be sent using the specified link_id -->
+        <!-- link_id: link where to send the matching bundles, pointing to the link setting in LinksSetting -->
         <tns:Route dest="dtn://server.dtn/*" link_id="server_link"/>
     </tns:RoutesSetting>
 
     <tns:DiscoveriesSetting>
         <!--  Setup your Discovery here -->
         <tns:Discovery id="ipdisc0" address_family="ip" port="9556"></tns:Discovery>
+        <!-- interface_id: interface used by the discovery thread -->
+        <!-- conv_layer_type: type of convergence layer [tcp, udp] -->
         <tns:Announce interface_id="wlan0" discovery_id="ipdisc0"
             conv_layer_type="tcp"></tns:Announce>
     </tns:DiscoveriesSetting>
