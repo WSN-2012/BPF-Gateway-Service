@@ -13,7 +13,6 @@
     <!-- keep_copy: indicates whether to keep a copy of the bundle after it has been sent -->
     <tns:StorageSetting quota="1" storage_path="build/dtn" test_data_log="true" keep_copy="true"/>
 
-
     <!--  Interfaces Section -->
     <tns:InterfacesSetting>
         <!--  Setup your listening interfaces here -->
@@ -32,18 +31,18 @@
         an IP address or a domain name -->
         <!-- type: the link type. [ALWAYSON, ONDEMAND, SCHEDULED, OPPORTUNISTIC] -->
         <!-- interval: sets the interval in seconds between attempts to connect using ALWAYSON links -->
-        <tns:Link id="server_link" conv_layer_type="tcp" dest="10.0.0.8:4556" type="ALWAYSON" interval="5" />
+        <!-- <tns:Link id="server_link" conv_layer_type="tcp" dest="192.168.0.1:4556" type="ALWAYSON" interval="5" /> -->
     </tns:LinksSetting>
 
     <!--  Routes Section -->
     <!-- local_eid: local Endpoint ID for this node. Must be in the format: dtn://myeid.dtn -->
     <!-- router_type: type of routing to be used by this node. [static, epidemic, prophet] -->
-    <tns:RoutesSetting local_eid="dtn://gateway.dtn" router_type="epidemic" queuing="fifo">
+    <tns:RoutesSetting local_eid="dtn://mylocaleid.dtn" router_type="epidemic" queuing="fifo">
         <!--  Setup your routes here -->
         <!-- dest: pattern of destination EID that matches this route. Every bundle
         with destination matching this pattern will be sent using the specified link_id -->
         <!-- link_id: link where to send the matching bundles, pointing to the link setting in LinksSetting -->
-        <tns:Route dest="dtn://server.dtn/*" link_id="server_link"/>
+        <!-- <tns:Route dest="dtn://server.dtn/*" link_id="server_link"/> -->
     </tns:RoutesSetting>
 
     <tns:DiscoveriesSetting>
