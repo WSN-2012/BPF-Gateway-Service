@@ -1,3 +1,3 @@
 [submodule "lib/BPF"]
 	path = lib/BPF
-url=git@github.com:WSN-2012/BPF.git
+	url=https://github.com/WSN-2012/BPF.git
