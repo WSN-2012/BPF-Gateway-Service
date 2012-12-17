@@ -18,26 +18,28 @@ Follow the below steps to build service and BPF.
 
 1.  `git clone --recursive https://github.com/WSN-2012/BPF-Base-Service.git`
 2.  `cd BPF-Base-Service`
-3.  change config file config/dtn.config.xml
+3.  `vi config/dtn.config.xml`
 4.  `ant`
+
+Note: When building the configuration located in config/dtn.config.xml is copied into the build folder together with the built jar. If you want to change any configuration options please edit the configuration stored in the built folder or rebuild.
 
 ### Start/Stop script
 To just run the application after building it:
 
-1.  Run `./run.sh`
+1.  `./run.sh`
 
 To install a start/stop script, follow the below steps:
 
-1.  Copy the start/stop script: `cp linux-scripts/bpf-service /etc/init.d/bpf-service`
-2.  Start it: `/etc/init.d/bpf-service start`
-3.  Stop it: `/etc/init.d/bpf-service stop`
+1.  `cp linux-scripts/bpf-service /etc/init.d/bpf-service`
+2.  `/etc/init.d/bpf-service start`
+3.  `/etc/init.d/bpf-service stop`
 
 ### Monitoring
 To be able to monitor the service and automatically restarting it, we suggest using monit. To do this you will need to have set up the start/stop scripts as shown above. Follow the below steps to set the monitoring up:
 
 1.  Install monit on your system. E.g: `sudo apt-get install monit`
-2.  Copy the monitor script to the monit path in your system: E.g: `cp linux-scripts/bpf-service.monit /etc/monit/conf.d/bpf-service`
-3.  Restart monit: `/etc/init.d/monit restart`
+2.  `cp linux-scripts/bpf-service.monit /etc/monit/conf.d/bpf-service`
+3.  `/etc/init.d/monit restart`
 
 ### Start at boot
 Do not forget to add the service to start at boot. E.g: `sudo update–rc.d bpf-service defaults`
