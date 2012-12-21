@@ -16,7 +16,7 @@ You will need to have ant to compile this in an easy way. To get ant look into h
 The BPF is included as a submodule and it is built automatically when building the service. It is possible to configure several settings in the configuration file.
 Follow the below steps to build service and BPF.
 
-1.  `git clone --recursive https://github.com/WSN-2012/BPF-Base-Service.git`
+1.  `git clone --recursive https://github.com/WSN-2012/BPF-Gateway-Service.git`
 2.  `cd BPF-Base-Service`
 3.  `vi config/dtn.config.xml`
 4.  `ant`
