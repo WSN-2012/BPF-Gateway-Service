@@ -17,7 +17,7 @@ The BPF is included as a submodule and it is built automatically when building t
 Follow the below steps to build service and BPF.
 
 1.  `git clone --recursive https://github.com/WSN-2012/BPF-Gateway-Service.git`
-2.  `cd BPF-Base-Service`
+2.  `cd BPF-Gateway-Service`
 3.  `vi config/dtn.config.xml`
 4.  `ant`
 
